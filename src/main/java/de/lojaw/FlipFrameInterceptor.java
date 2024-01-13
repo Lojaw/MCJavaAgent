@@ -3,7 +3,7 @@ package de.lojaw;
 import net.bytebuddy.asm.Advice;
 import java.lang.reflect.Method;
 
-public class MeinInterceptor {
+public class FlipFrameInterceptor {
 
     @Advice.OnMethodEnter
     public static void enter(@Advice.Origin Method method) {

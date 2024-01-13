@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation("net.bytebuddy:byte-buddy:1.14.11") // Ersetzen Sie dies durch die neueste verfügbare Version
+    implementation("net.bytebuddy:byte-buddy-agent:1.14.11")
 }
 
 tasks {
