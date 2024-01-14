@@ -13,6 +13,8 @@ repositories {
 dependencies {
     implementation("net.bytebuddy:byte-buddy:1.14.11") // Ersetzen Sie dies durch die neueste verfügbare Version
     implementation("net.bytebuddy:byte-buddy-agent:1.14.11")
+    implementation("org.lwjgl:lwjgl:3.3.2")
+    implementation("org.lwjgl:lwjgl-opengl:3.3.2")
 }
 
 tasks {
