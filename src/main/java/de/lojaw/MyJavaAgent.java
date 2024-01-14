@@ -28,12 +28,23 @@ public class MyJavaAgent {
                 .make()
                 .load(ClassLoader.getSystemClassLoader(), ClassReloadingStrategy.fromInstalledAgent());*/
 
-        new AgentBuilder.Default()
+/*        new AgentBuilder.Default()
                 .type(ElementMatchers.named("com.mojang.blaze3d.systems.RenderSystem"))
                 .transform((builder, typeDescription, classLoader, javaModule, module) ->
                         builder.visit(Advice.to(FlipFrameInterceptor.class).on(ElementMatchers.named("flipFrame").and(ElementMatchers.takesArguments(long.class))))
                 )
+                .installOn(inst);*/
+
+        new AgentBuilder.Default()
+                .type(ElementMatchers.named("eqv"))
+                .transform((builder, typeDescription, classLoader, javaModule, module) -> builder
+                        .method(ElementMatchers.named("d")
+                                .and(ElementMatchers.isPrivate())
+                                .and(ElementMatchers.takesArguments(boolean.class)))
+                        .intercept(Advice.to(TickInterceptor.class))
+                )
                 .installOn(inst);
+
 
     }
 }
