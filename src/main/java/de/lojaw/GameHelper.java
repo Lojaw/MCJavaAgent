@@ -3,6 +3,7 @@ package de.lojaw;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 
 public class GameHelper {
 
@@ -24,22 +25,28 @@ public class GameHelper {
     }
 
     // Ergänzen Sie die Methode getGuiGraphics
-    private static Object getGuiGraphics(Object minecraftInstance) {
+    public static Object getGuiGraphics(Object minecraftInstance
+    ) {
         Logger.logMessage("Aufruf von getGuiGraphics");
         try {
             Class<?> guiGraphicsClass = Class.forName("esf"); // Ersetzen Sie "esf" durch den aktuellen obfuskierten Namen
 
-            // Holen Sie die PoseStack- und BufferSource-Instanzen
             Object poseStackInstance = getPoseStackInstance();
             Object bufferSourceInstance = getBufferSourceInstance();
 
-            // Definieren des Konstruktors für guiGraphicsClass
-            Constructor<?> constructor = guiGraphicsClass.getDeclaredConstructor(minecraftInstance.getClass(), poseStackInstance.getClass(), bufferSourceInstance.getClass());
+            // Assertions hinzufügen
+            assert minecraftInstance != null : "minecraftInstance ist null";
+            assert poseStackInstance != null : "poseStackInstance ist null";
+            assert bufferSourceInstance != null : "bufferSourceInstance ist null";
 
-            // Erstellen einer neuen Instanz von guiGraphics
+            Constructor<?> constructor = guiGraphicsClass.getDeclaredConstructor(minecraftInstance.getClass(), poseStackInstance.getClass(), bufferSourceInstance.getClass());
             Object guiGraphicsInstance = constructor.newInstance(minecraftInstance, poseStackInstance, bufferSourceInstance);
 
-            return guiGraphicsInstance; // Rückgabe des guiGraphics-Objekts
+            return guiGraphicsInstance;
+        } catch (AssertionError e) {
+            Logger.logMessage("Assertion Fehler: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         } catch (Exception e) {
             Logger.logMessage("Fehler in getGuiGraphics: " + e.getMessage());
             e.printStackTrace();
@@ -89,13 +96,21 @@ public class GameHelper {
     public static Object getBufferBuilderInstance(int size) {
         Logger.logMessage("Aufruf von getBufferBuilderInstance");
         try {
-            // Laden Sie die Klasse mit dem obfuskierten Namen
-            Class<?> bufferBuilderClass = Class.forName("elk"); // Ersetzen Sie "elk" durch den aktuellen obfuskierten Namen
-
-            // Erstellen Sie eine Instanz von BufferBuilder mit der angegebenen Größe
+            Class<?> bufferBuilderClass = Class.forName("elk"); // BufferBuilder
             Constructor<?> constructor = bufferBuilderClass.getDeclaredConstructor(int.class);
-            return constructor.newInstance(size);
+            Object bufferBuilderInstance = constructor.newInstance(size);
 
+            // Überprüfen Sie, ob der Buffer voll ist
+            Field bufferField = bufferBuilderClass.getDeclaredField("h"); // ByteBuffer
+            bufferField.setAccessible(true);
+            ByteBuffer buffer = (ByteBuffer) bufferField.get(bufferBuilderInstance);
+            assert buffer.remaining() >= size : "Buffer hat nicht genug Platz";
+
+            return bufferBuilderInstance;
+        } catch (AssertionError e) {
+            Logger.logMessage("Assertion Fehler: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         } catch (Exception e) {
             Logger.logMessage("Fehler in getBufferBuilderInstance: " + e.getMessage());
             e.printStackTrace();
